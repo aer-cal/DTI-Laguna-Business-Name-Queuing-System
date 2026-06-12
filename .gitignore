@@ -1,0 +1,31 @@
+# Python environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+temp/
+*.spec
+
+# Logs
+*.log
+*.out.log
+*.err.log
+*.stdout.log
+*.stderr.log
+
+# Windows / editor files
+Thumbs.db
+Desktop.ini
+.vscode/
+
+# Python packaging / cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

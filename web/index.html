@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DTI Laguna - Operator Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-slate-100 min-h-screen overflow-x-hidden overflow-y-auto lg:h-screen lg:overflow-hidden">
+
+    <main class="min-h-screen lg:h-full w-full pb-6 sm:pb-8 md:pb-10 relative">
+
+    <!-- OPERATOR PANEL (MERGED) -->
+    <div class="p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-4 bg-gradient-to-br from-slate-50 to-slate-100" style="overflow-y: auto;">
+        <button id="settings-btn" onclick="toggleSettingsDrawer()" class="btn-modern fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-2xl bg-white/95 px-4 py-3 text-sm font-bold text-slate-800 shadow-lg border border-slate-200">
+            <span>SETTINGS</span>
+            <span id="settings-chevron" class="text-xs transition-transform duration-200">▼</span>
+        </button>
+
+        <div id="settings-drawer" class="fixed top-20 right-4 z-50 hidden w-[min(92vw,24rem)] rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xl">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Settings</p>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800">Settings</h3>
+                </div>
+                <button id="settings-status-btn" onclick="runStatusCheck()" class="btn-modern px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">STATUS CHECK</button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <label class="flex flex-col gap-1 text-sm font-semibold text-slate-700">
+                    Teller Name
+                    <input id="teller-name-input" type="text" value="Operator" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-800" placeholder="Enter teller name" />
+                </label>
+
+                <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+                    <p class="text-sm font-semibold text-slate-700 mb-2">Teller Gender</p>
+                    <div class="flex items-center gap-4 text-sm font-medium text-slate-700">
+                        <label class="flex items-center gap-2"><input type="radio" name="teller-gender" value="male" checked class="h-4 w-4" /> Male</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="teller-gender" value="female" class="h-4 w-4" /> Female</label>
+                    </div>
+                </div>
+
+                <label class="flex flex-col gap-1 text-sm font-semibold text-slate-700">
+                    Appearance
+                    <select id="theme-select" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-800">
+                        <option value="light">Light Mode</option>
+                        <option value="dark">Dark Mode</option>
+                    </select>
+                </label>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700">
+                        <span>Audio Announcement</span>
+                        <input id="audio-announcement-toggle" type="checkbox" checked class="h-5 w-5" />
+                    </label>
+
+                    <label class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700">
+                        <span>Sound Effects</span>
+                        <input id="sound-effects-toggle" type="checkbox" checked class="h-5 w-5" />
+                    </label>
+                </div>
+
+                <label class="flex flex-col gap-1 text-sm font-semibold text-slate-700">
+                    Volume <span id="volume-value" class="text-xs font-bold text-slate-500">50%</span>
+                    <input id="volume-slider" type="range" min="0" max="100" value="50" class="w-full" />
+                </label>
+            </div>
+
+            <p id="status-check-result" class="mt-3 text-sm text-slate-500 font-medium">Settings ready.</p>
+        </div>
+
+        <div class="flex items-center gap-3 sm:gap-4 pr-24 lg:pr-28">
+            <img src="DTI_Logo_2019.png" alt="DTI Philippines Logo" class="h-16 sm:h-20 md:h-24 shrink-0" />
+            <div>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-900">DTI Laguna</h1>
+                <p class="text-xs sm:text-sm text-slate-600 font-semibold">Operator Panel</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 sm:p-6 text-center rounded-3xl">
+            <p class="text-slate-500 text-sm sm:text-base md:text-lg font-semibold uppercase tracking-wide">Current Ticket</p>
+            <h2 id="ticket-number" class="text-4xl sm:text-5xl md:text-6xl font-black text-blue-800 leading-none my-2 sm:my-3">R-000</h2>
+            <div id="status-pill" class="inline-block px-4 sm:px-6 py-2 rounded-full bg-blue-100 text-blue-800 font-bold text-base sm:text-lg">
+                REGULAR CLIENT
+            </div>
+        </div>
+
+        <!-- OPERATOR CONTROLS -->
+        <div class="space-y-3 bg-white rounded-2xl p-4 sm:p-5 shrink-0">
+            <h3 class="text-base sm:text-lg font-bold text-slate-800 text-center">Queue Controls</h3>
+            
+            <!-- Queue Mode Selection -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button onclick="changeType()" class="btn-modern bg-gradient-to-br from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 font-bold py-2.5 sm:py-3 rounded-xl text-sm transition-all shadow-md min-h-[4.5rem] flex flex-col items-center justify-center">
+                    <span class="block text-xs opacity-75">SWITCH</span>
+                    <span id="mode-display" class="block text-base font-black">REGULAR</span>
+                </button>
+                <button onclick="nextTicket()" class="btn-modern bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 sm:py-3 rounded-xl text-base transition-all shadow-md w-full min-h-[4.5rem] flex items-center justify-center">
+                    ➜ NEXT TICKET
+                </button>
+            </div>
+
+            <!-- Reset -->
+            <button onclick="resetQueue()" class="btn-modern w-full bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2.5 sm:py-3 rounded-xl text-sm md:text-base transition-all shadow-md min-h-[4.5rem] flex items-center justify-center">
+                🔄 RESET QUEUE
+            </button>
+        </div>
+
+        <!-- STATUS (MERGED) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+            <!-- Queue Statistics -->
+            <div class="glass-card p-4 rounded-xl shrink-0">
+                <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Queue Stats</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-blue-50 rounded-lg p-2 text-center">
+                        <p class="text-xs text-slate-600 font-semibold">REGULAR</p>
+                        <p id="reg-count" class="text-2xl font-black text-blue-800">0</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-2 text-center">
+                        <p class="text-xs text-slate-600 font-semibold">PRIORITY</p>
+                        <p id="pri-count" class="text-2xl font-black text-purple-800">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather -->
+            <div class="glass-card p-4 rounded-xl shrink-0 flex flex-col justify-center">
+                <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Weather</p>
+                <div class="flex items-center gap-3">
+                    <svg id="weather-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-yellow-500 shrink-0">
+                        <circle cx="12" cy="12" r="5"/>
+                        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </g>
+                    </svg>
+                    <p id="weather-text" class="text-sm sm:text-base font-medium text-slate-600">Banca-Banca, Victoria, Laguna | --°C</p>
+                </div>
+            </div>
+
+            <!-- Time & Date -->
+            <div class="glass-card p-4 rounded-xl shrink-0 flex flex-col justify-center">
+                <p id="operator-clock" class="text-3xl font-semibold text-slate-800 leading-tight">12:00:00 PM</p>
+                <p id="operator-date" class="text-sm font-medium text-slate-500 mt-1">Friday, April 17, 2026</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+    <footer class="fixed bottom-0 w-full overflow-hidden shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+        <div class="h-1 bg-yellow-300/80"></div>
+
+        <div class="h-1 bg-[#CE1126]"></div>
+
+        <div class="bg-[#0038A8] py-0.5 overflow-hidden">
+            <div class="flex whitespace-nowrap animate-scroll">
+                <div class="flex items-center gap-20 px-10">
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Tatag ng Negosyo, Alamin sa DTI! Ask us about our MSME programs today.
+                    </span>
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Be a Smart Consumer: Check the labels, compare the prices!
+                    </span>
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Almost there! Follow us on Facebook: @DTI.LagunaProvince
+                    </span>
+                </div>
+                <div class="flex items-center gap-20 px-10">
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Tatag ng Negosyo, Alamin sa DTI! Ask us about our MSME programs today.
+                    </span>
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Be a Smart Consumer: Check the labels, compare the prices!
+                    </span>
+                    <span class="text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wide">
+                        Almost there! Follow us on Facebook: @DTI.LagunaProvince
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="/eel.js"></script>
+    <script>
+        // Go full screen on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.resizeTo(screen.availWidth, screen.availHeight);
+                window.moveTo(0, 0);
+            }, 100);
+        });
+
+        let operatorCounts = {
+            reg: 0,
+            pri: 0
+        };
+
+        function updateOperatorClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const clockEl = document.getElementById('operator-clock');
+            const dateEl = document.getElementById('operator-date');
+            if (clockEl) clockEl.textContent = timeStr;
+            if (dateEl) dateEl.textContent = dateStr;
+        }
+
+        setInterval(updateOperatorClock, 1000);
+        updateOperatorClock();
+
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=14.2733&longitude=121.4218&current=temperature_2m,weather_code&timezone=Asia/Manila');
+                const data = await response.json();
+                const temp = Math.round(data.current.temperature_2m);
+                const weatherText = document.getElementById('weather-text');
+                if (weatherText) weatherText.textContent = `Banca-Banca, Victoria, Laguna | ${temp}°C`;
+            } catch (error) {
+                const weatherText = document.getElementById('weather-text');
+                if (weatherText) weatherText.textContent = 'Banca-Banca, Victoria, Laguna | --°C';
+            }
+        }
+
+        updateWeather();
+        setInterval(updateWeather, 300000);
+
+        eel.expose(updateDisplay);
+        function updateDisplay(ticket, status, alert) {
+            const ticketEl = document.getElementById('ticket-number');
+            const statusEl = document.getElementById('status-pill');
+            if (ticketEl) ticketEl.textContent = ticket;
+            if (statusEl) statusEl.textContent = status;
+
+            const isPriority = (status || '').toUpperCase().includes('PRIORITY');
+            const modeEl = document.getElementById('mode-display');
+            if (modeEl) modeEl.textContent = isPriority ? 'PRIORITY' : 'REGULAR';
+
+            if (ticketEl) {
+                ticketEl.className = `text-4xl sm:text-5xl md:text-6xl font-black leading-none my-2 sm:my-3 ${isPriority ? 'text-red-700' : 'text-blue-800'}`;
+            }
+            if (statusEl) {
+                statusEl.className = `inline-block px-4 sm:px-6 py-2 rounded-full font-bold text-base sm:text-lg ${isPriority ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            }
+
+            if (ticket && ticket.startsWith('R')) {
+                operatorCounts.reg = parseInt(ticket.substring(2)) || 0;
+            } else if (ticket && ticket.startsWith('P')) {
+                operatorCounts.pri = parseInt(ticket.substring(2)) || 0;
+            }
+
+            const regEl = document.getElementById('reg-count');
+            const priEl = document.getElementById('pri-count');
+            if (regEl) regEl.textContent = operatorCounts.reg;
+            if (priEl) priEl.textContent = operatorCounts.pri;
+        }
+
+        eel.expose(disableButtons);
+        function disableButtons() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        }
+
+        eel.expose(enableButtons);
+        function enableButtons() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        }
+
+        function changeType() {
+            eel.toggle_mode();
+        }
+
+        function nextTicket() {
+            eel.get_next_ticket();
+        }
+
+        function resetQueue() {
+            if (confirm('Are you sure you want to reset the entire queue?')) {
+                eel.reset_queue();
+                operatorCounts.reg = 0;
+                operatorCounts.pri = 0;
+                const regEl = document.getElementById('reg-count');
+                const priEl = document.getElementById('pri-count');
+                if (regEl) regEl.textContent = '0';
+                if (priEl) priEl.textContent = '0';
+            }
+        }
+
+        function toggleSettingsDrawer(forceOpen) {
+            const drawer = document.getElementById('settings-drawer');
+            const chevron = document.getElementById('settings-chevron');
+            if (!drawer) return;
+
+            const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : drawer.classList.contains('hidden');
+            drawer.classList.toggle('hidden', !shouldOpen);
+            if (chevron) chevron.textContent = shouldOpen ? '▲' : '▼';
+        }
+
+        function setBodyTheme(theme) {
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+        }
+
+        function saveSettings() {
+            const tellerName = document.getElementById('teller-name-input')?.value?.trim() || 'Operator';
+            const theme = document.getElementById('theme-select')?.value === 'dark' ? 'dark' : 'light';
+            const audioAnnouncements = !!document.getElementById('audio-announcement-toggle')?.checked;
+            const soundEffects = !!document.getElementById('sound-effects-toggle')?.checked;
+            const volume = Number(document.getElementById('volume-slider')?.value || 50);
+            const tellerGender = document.querySelector('input[name="teller-gender"]:checked')?.value || 'male';
+
+            setBodyTheme(theme);
+            eel.set_bn_teller(tellerName);
+            eel.set_teller_gender(tellerGender);
+            eel.set_theme(theme);
+            eel.set_call_announcements(audioAnnouncements);
+            eel.set_sound_effects(soundEffects);
+            eel.set_announcement_volume(volume);
+
+            const result = document.getElementById('status-check-result');
+            if (result) {
+                result.textContent = `Saved: ${tellerName} | ${theme} mode | ${tellerGender} display | volume ${volume}%`;
+            }
+        }
+
+        function runStatusCheck() {
+            const ticket = document.getElementById('ticket-number')?.textContent || 'R-000';
+            const status = document.getElementById('status-pill')?.textContent || 'REGULAR CLIENT';
+            const mode = document.getElementById('mode-display')?.textContent || 'REGULAR';
+            const result = document.getElementById('status-check-result');
+            if (result) {
+                result.textContent = `Online | ${ticket} | ${status} | ${mode} mode`;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const themeSelect = document.getElementById('theme-select');
+            const audioToggle = document.getElementById('audio-announcement-toggle');
+            const soundToggle = document.getElementById('sound-effects-toggle');
+            const volumeSlider = document.getElementById('volume-slider');
+            const tellerInput = document.getElementById('teller-name-input');
+            const genderRadios = document.querySelectorAll('input[name="teller-gender"]');
+
+            if (themeSelect) themeSelect.value = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            if (audioToggle) audioToggle.checked = true;
+            if (soundToggle) soundToggle.checked = true;
+            if (volumeSlider) volumeSlider.value = '50';
+            if (tellerInput) tellerInput.value = 'Operator';
+
+            document.addEventListener('click', (event) => {
+                const drawer = document.getElementById('settings-drawer');
+                const button = document.getElementById('settings-btn');
+                if (!drawer || !button) return;
+                if (drawer.classList.contains('hidden')) return;
+                if (drawer.contains(event.target) || button.contains(event.target)) return;
+                toggleSettingsDrawer(false);
+            });
+
+            if (themeSelect) {
+                themeSelect.addEventListener('change', () => {
+                    setBodyTheme(themeSelect.value);
+                    saveSettings();
+                });
+            }
+
+            if (audioToggle) {
+                audioToggle.addEventListener('change', () => {
+                    saveSettings();
+                });
+            }
+
+            if (soundToggle) {
+                soundToggle.addEventListener('change', () => {
+                    saveSettings();
+                });
+            }
+
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', () => {
+                    const volumeValue = document.getElementById('volume-value');
+                    if (volumeValue) volumeValue.textContent = `${volumeSlider.value}%`;
+                    saveSettings();
+                });
+            }
+
+            genderRadios.forEach((radio) => {
+                radio.addEventListener('change', () => {
+                    saveSettings();
+                });
+            });
+
+            if (tellerInput) {
+                tellerInput.addEventListener('input', () => {
+                    saveSettings();
+                });
+            }
+
+            saveSettings();
+        });
+    </script>
+
+</body>
+</html>

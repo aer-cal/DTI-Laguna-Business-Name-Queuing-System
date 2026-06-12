@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DTI Laguna - Operator Loading</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #ffffff;
+            /* Use the provided splash image as the background (file already in web/). */
+            background-image: url('SplashBG.png');
+            /* center the image and favor showing a bit more of the bottom for symmetry */
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .loading-box {
+            /* No central panel: overlay text directly on the background image */
+            background: transparent;
+            border-radius: 0;
+            padding: 18px 16px;
+            max-width: 420px;
+            width: auto;
+            height: auto;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transform: translateY(6%); /* keep slight nudge for composition */
+        }
+        
+        .logo-wrapper {
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .logo-wrapper img {
+            height: 80px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+        }
+        
+        .tagline {
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+            text-align: center;
+        }
+        
+        .tagline h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.3px;
+            color: #0038A8;
+        }
+        
+        .tagline p {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.3px;
+            color: #333;
+        }
+
+        .subtitle {
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .loading-spinner {
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .spinner {
+            width: 35px;
+            height: 35px;
+            border: 3px solid rgba(0, 56, 168, 0.2);
+            border-top: 3px solid #0038A8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-text {
+            animation: fadeInUp 0.8s ease-out 0.9s both;
+            color: #888;
+            font-size: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="loading-box">
+            <div class="logo-wrapper">
+                <img src="DTI_Logo_2019.png" alt="DTI Philippines Logo" />
+            </div>
+            
+            <div class="tagline">
+                <h1>DTI Laguna</h1>
+                <p>Serbisyong Higit pa sa Inaasahan</p>
+            </div>
+
+            <div class="subtitle">
+                Operator Panel
+            </div>
+            
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="status-text">
+                <p id="status">Initializing...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="eel.js"></script>
+    <script>
+        // Simulate loading progress
+        const statuses = [
+            'Initializing...',
+            'Loading Queue System...',
+            'Connecting Services...',
+            'Ready!'
+        ];
+        
+        let currentStatus = 0;
+        const statusEl = document.getElementById('status');
+        
+        const interval = setInterval(() => {
+            currentStatus++;
+            if (currentStatus < statuses.length) {
+                statusEl.textContent = statuses[currentStatus];
+            } else {
+                clearInterval(interval);
+            }
+        }, 800);
+        
+        // Redirect to index.html after loading completes
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 5000);
+    </script>
+</body>
+</html>
