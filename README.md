@@ -1,157 +1,200 @@
-# DTI Laguna Queue Management System - Dual Display Setup
+# DTI Laguna Queue Management System
+
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![Windows](https://img.shields.io/badge/Windows-Desktop%20App-0078D6.svg)](https://www.microsoft.com/windows)
+[![Eel](https://img.shields.io/badge/Frontend-Eel%20%2B%20HTML-orange.svg)](https://github.com/python-eel/Eel)
+
+DTI Laguna Queue Management System is a Windows-based dual-display queue solution for service counters. It keeps the operator tools and the customer display separate so staff can manage tickets, monitor queue flow, and trigger announcements while customers see the current ticket, queue status, time, weather, and contact details in real time.
+
+## Highlights
+
+- Dual-display workflow for teller and customer screens
+- Regular and Priority queue support
+- Voice announcements and live status updates
+- Weather, time, and public contact details on the client display
+- Windows-friendly launcher and packaging scripts
+
+## Screenshot
+
+| Operator Panel | Client Display |
+| --- | --- |
+| ![Operator Panel](assets/screenshots/operator-panel.png) | ![Client Display](assets/screenshots/client-display.png) |
+
+The screenshots above show the actual operator and customer interfaces generated from the app UI.
+
+## Quick Summary
+
+This project provides a practical queue-management interface for service counters that need a simple operator panel and a clean public display. It is designed for Windows and can run as a paired local app or be packaged for desktop deployment.
 
 ## Overview
-The system now runs **two separate windows**:
-- **Operator Panel** (Port 8000): Control panel with buttons and statistics
-- **Client Display** (Port 8001): Customer-facing display with ticket information
+
+The system runs two connected windows:
+
+- Operator Panel: the staff control panel for queue actions, statistics, and settings
+- Client Display: the customer-facing screen that shows the current ticket and live queue status
+
+The two windows communicate locally over HTTP so changes in the operator panel update the client display immediately.
 
 ## Features
 
-### Operator Panel Features
-- **Queue Controls**: Switch between Regular/Priority modes
-- **Ticket Management**: Call next customer with automatic announcements
-- **Statistics Dashboard**: View Regular/Priority served counts and waiting customers
-- **Media Display**: Embed YouTube videos for waiting room entertainment
-- **Waiting Queue Tracker**: Add/track customers waiting
-- **Reset Function**: Clear all queue data
+### Operator Panel
 
-### Client Display Features
-- **Large Ticket Display**: Current serving ticket number (huge font)
-- **Status Indicator**: Shows if "REGULAR" or "PRIORITY" client being served
-- **Waiting Queue Bar**: Visual progress bar showing customers waiting
-- **Time & Date**: Live clock and date display
-- **Weather Information**: Current temperature in Laguna
-- **DTI Contact Details**: Phone, email, Facebook, and address information
+- Switch between Regular and Priority queue modes
+- Call the next customer with automatic voice announcements
+- Track served counts and waiting customers
+- Add and manage customers in the waiting queue
+- Display YouTube videos for waiting-room entertainment
+- Reset the queue when needed
+- Adjust teller name, gender, theme, volume, and audio settings
 
-## Running the System
+### Client Display
 
-### Option 1: Automatic (Recommended)
-Double-click `run.bat` - This automatically starts BOTH windows:
-1. Operator Panel launches first
-2. Client Display opens automatically in a separate window
-3. Both windows ready to use!
+- Large ticket number display for easy visibility
+- Status indicator for Regular or Priority service
+- Waiting queue progress display
+- Live time and date
+- Weather information for Laguna
+- DTI contact details for the public display
 
-### Option 2: Run Either Window Individually
-**Start from Operator Panel:**
+## Requirements
+
+- Windows 10 or Windows 11
+- Python 3.x
+- Google Chrome or another Chromium-based browser
+- Internet connection for weather data and YouTube playback
+
+The app uses Windows-specific features such as `winsound`, so it is intended for Windows systems only.
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/aer-cal/DTI-Laguna-Business-Name-Queuing-System.git
+cd DTI-Laguna-Business-Name-Queuing-System
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install eel pyttsx3 requests
+```
+
+If you plan to package the app into a Windows executable, also install PyInstaller:
+
+```bash
+pip install pyinstaller
+```
+
+## Usage
+
+### Option 1: Run the launcher
+
+Double-click `run.bat` to start the system with both windows.
+
+### Option 2: Start the operator panel
+
 ```bash
 python queue_system.py
 ```
-→ Automatically launches Client Display in a separate window
 
-**Start from Client Display:**
-```bash
-python client_display.py
-```
-→ Automatically launches Operator Panel in a separate window
+This opens the Operator Panel on port 8000 and starts the Client Display on port 8001.
 
-## Local PC App Setup
+### Option 3: Start the client display
 
-If you want this to behave like a desktop app on the teller PC, the cleanest setup is:
-
-1. Keep the project folder on the PC, preferably in a fixed local path.
-2. Run `install_desktop_shortcut.bat` once, or use `build_windows_app.ps1` if you are packaging a deployment, and the desktop shortcut will be created automatically.
-3. Open the app from the shortcut named `DTI Laguna Queue System`.
-4. Leave the PC connected to the internet for YouTube and weather updates.
-
-The shortcut points to a quiet Windows launcher, so the app opens without showing the command window and only runs when someone clicks the shortcut.
-
-This keeps the current Python app unchanged while making it feel like a normal local desktop program.
-
-### Option 3: Manual (Both in separate terminals)
-**Terminal 1 (Operator Panel):**
-```bash
-python queue_system.py
-```
-
-**Terminal 2 (Client Display):**
 ```bash
 python client_display.py
 ```
 
-## Setup Instructions
+This opens the Client Display on port 8001 and starts the Operator Panel on port 8000.
 
-1. **Operator Panel** - Runs on your teller/operator computer
-   - Close or minimize to the side of your main monitor
-   - Use buttons to control queue flow
+### Local ports used by the app
 
-2. **Client Display** - Runs on customer-facing monitor/screen
-   - Display at full screen on a separate monitor, TV, or projector
-   - Shows current ticket, wait status, time, weather, and DTI info
+- 8000: Operator Panel
+- 8001: Client Display
+- 8002: Client update server
+- 8003: Operator shutdown server
 
-## Using the System
+## Project Structure
 
-### For Operators:
-1. **Switch Mode**: Click "SWITCH REGULAR/PRIORITY" button to toggle between Regular and Priority queues
-2. **Add Waiting Customer**: Click "ADD WAITING" when a new customer arrives
-3. **Call Next**: Click "NEXT TICKET" to serve the next customer
-   - Announcement plays automatically
-   - Wait bar updates on client display
-4. **Reset**: Click "RESET QUEUE" to clear everything (confirmation required)
-5. **Video**: Paste YouTube URL or Video ID to display videos on client screen
+- `queue_system.py` - Operator panel backend and UI launcher
+- `client_display.py` - Customer-facing display backend and UI launcher
+- `web/` - HTML, CSS, images, and frontend assets
+- `run.bat` - Windows launcher for both windows
+- `build_windows_app.ps1` / `build_windows_app.bat` - Packaging scripts
+- `install_desktop_shortcut.bat` - Shortcut installer
 
-### For Customers:
-- Watch the large ticket display to see current ticket number
-- Monitor the status pill (REGULAR/PRIORITY)
-- Check the waiting bar to see how many customers are ahead
-- View DTI contact info and weather while waiting
+## Building for Windows
 
-## Display Recommendations
+If you want to package the system as a desktop application, use the provided build scripts:
 
-**Operator Panel:**
-- Laptop or desktop screen (1920x1440 recommended)
-- Keep on teller's desk for control
+```bash
+build_windows_app.ps1
+```
 
-**Client Display:**
-- Large monitor, TV, or projector
-- 1920x1080 or higher recommended
-- Mount high and visible to all waiting customers
+or
 
-## Customization
+```bash
+build_windows_app.bat
+```
 
-### Changing Display Size
-Edit the `size=` parameter in Python files:
-- `queue_system.py`: Operator panel size
-- `client_display.py`: Client display size
-
-### Changing Ports
-Default ports are 8000 (operator) and 8001 (client).
-Modify the `port=` parameter if these are already in use.
-
-### Styling
-Edit the Tailwind CSS classes in:
-- `web/index.html` (operator interface)
-- `web/client.html` (client display)
-- `web/styles.css` (shared styles)
+These scripts are intended for creating a distributable Windows build and desktop shortcut.
 
 ## Troubleshooting
 
-**Both windows not appearing?**
-- Check if ports 8000 and 8001 are available
-- Try running each script individually in separate terminals
+### Both windows do not open
 
-**Video not loading?**
-- Ensure internet connection is available
-- Try just the video ID instead of full YouTube URL
-- Format: `dQw4w9WgXcQ` or `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
+- Make sure ports 8000, 8001, 8002, and 8003 are not already in use
+- Try running `queue_system.py` and `client_display.py` separately in two terminals
+- Check whether a firewall or antivirus tool is blocking local connections
 
-**No sound?**
-- Check system volume on operator computer
-- Ensure speakers are connected and working
-- Check microphone/audio output settings in Windows
+### YouTube video does not load
 
-**Port already in use?**
-- Change the port number in `queue_system.py` and `client_display.py`
-- Or close other applications using those ports
+- Check that the computer has internet access
+- Try using the YouTube video ID instead of the full URL
+- Make sure the video is publicly accessible
 
-**Shortcut did not appear?**
-- Make sure the project folder is not blocked by OneDrive sync or permissions
-- Run `install_desktop_shortcut.bat` again as the current Windows user, or rerun `build_windows_app.ps1` for packaged deployments
-- Confirm the desktop shortcut points to the app launcher inside this folder
+### No sound or announcement audio
 
-## Technical Details
+- Check the system volume on the operator computer
+- Confirm that speakers are connected and selected as the output device
+- Verify that Windows audio is working outside the app
 
-- **Backend**: Python with Eel framework
-- **Frontend**: HTML5, Tailwind CSS
-- **Browser**: Chrome (Chromium-based)
-- **Audio**: Text-to-speech with pyttsx3
-- **Data**: In-memory queue management
+### Port already in use
+
+- Close other apps that may be using the same port
+- Restart the app after freeing the port
+- Update the port values in the Python files if needed
+
+### Desktop shortcut missing
+
+- Run `install_desktop_shortcut.bat` again as the current Windows user
+- Make sure the project folder is not blocked by permissions or sync issues
+
+## Customization
+
+You can adjust the appearance and behavior by editing:
+
+- `web/index.html` for the operator interface
+- `web/client.html` for the client display
+- `web/styles.css` for shared styling
+- `queue_system.py` for operator behavior and settings
+- `client_display.py` for display behavior and update handling
+
+## Credits
+
+- Built with Python and Eel
+- Frontend styling uses HTML and Tailwind CSS
+- Text-to-speech announcements use `pyttsx3`
+- This project was created for the DTI Laguna queue management workflow
+
+## License
+
+Add a license here if you want the project to be public on GitHub.
